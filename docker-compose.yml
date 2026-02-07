@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      - SCORING_VERSION=${SCORING_VERSION:-v1.0}
+      - EVENT_WINDOW_DAYS=${EVENT_WINDOW_DAYS:-90}
+      - DECAY_HALF_LIFE_DAYS=${DECAY_HALF_LIFE_DAYS:-30}
+      - DEBUG=${DEBUG:-false}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health')" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
