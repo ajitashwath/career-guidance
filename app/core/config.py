@@ -123,6 +123,26 @@ class Settings(BaseSettings):
     )
     
     # ─────────────────────────────────────────────────────────────────────────
+    # Security Configuration
+    # ─────────────────────────────────────────────────────────────────────────
+    allowed_origins: list[str] = Field(
+        default=["http://localhost:3000", "http://localhost:5173"],
+        description="Allowed CORS origins (production should be explicit domains)"
+    )
+    redis_url: str = Field(
+        default="redis://localhost:6379",
+        description="Redis URL for rate limiting and caching"
+    )
+    jwt_token_expire_minutes: int = Field(
+        default=60,
+        description="JWT token expiration time in minutes"
+    )
+    jwt_refresh_token_expire_days: int = Field(
+        default=7,
+        description="Refresh token expiration time in days"
+    )
+    
+    # ─────────────────────────────────────────────────────────────────────────
     # Tier Thresholds (percentile-based)
     # ─────────────────────────────────────────────────────────────────────────
     tier_1_percentile: int = Field(

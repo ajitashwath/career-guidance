@@ -13,6 +13,13 @@ from app.api.recruiters import router as recruiters_router
 from app.api.admin import router as admin_router
 from app.api.ai import router as ai_router
 
+# Security middleware
+from app.middleware.rate_limiting import limiter, rate_limit_exceeded_handler
+from app.middleware.audit_logging import AuditLoggingMiddleware
+from app.middleware.error_handler import ErrorHandlerMiddleware
+from app.middleware.security_headers import SecurityHeadersMiddleware
+from slowapi.errors import RateLimitExceeded
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -38,13 +45,27 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Security settings
+settings = get_settings()
+
+# Add security middleware (order matters - first added = outermost)
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(ErrorHandlerMiddleware)
+app.add_middleware(AuditLoggingMiddleware)
+
+# CORS with explicit origin whitelist (SECURITY FIX)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=settings.allowed_origins,  # ✅ FIXED: No more allow_origins=["*"]
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
     allow_headers=["*"],
+    max_age=3600,  # Cache preflight requests for 1 hour
 )
+
+# Add rate limiter
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
 
 app.include_router(
     students_router,
