@@ -93,8 +93,8 @@ class Settings(BaseSettings):
     # ─────────────────────────────────────────────────────────────────────────
     # LLM Configuration
     # ─────────────────────────────────────────────────────────────────────────
-    llm_provider: Literal["openai", "anthropic", "google"] = Field(
-        default="openai",
+    llm_provider: Literal["openai", "anthropic", "google", "openrouter"] = Field(
+        default="openrouter",
         description="LLM provider to use"
     )
     openai_api_key: str = Field(
@@ -121,6 +121,15 @@ class Settings(BaseSettings):
         default="gemini-2.0-flash",
         description="Google model to use"
     )
+    openrouter_api_key: str = Field(
+        default="",
+        description="OpenRouter API key"
+    )
+    openrouter_model: str = Field(
+        default="anthropic/claude-3.5-sonnet",
+        description="OpenRouter model to use"
+    )
+
     
     # ─────────────────────────────────────────────────────────────────────────
     # Security Configuration

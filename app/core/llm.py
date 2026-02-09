@@ -39,8 +39,21 @@ def get_llm():
             model=settings.google_model,
             temperature=0.7
         )
+    elif settings.llm_provider == "openrouter":
+        from langchain_openai import ChatOpenAI
+        return ChatOpenAI(
+            api_key=settings.openrouter_api_key,
+            base_url="https://openrouter.ai/api/v1",
+            model=settings.openrouter_model,
+            temperature=0.7,
+            default_headers={
+                "HTTP-Referer": "https://career-intelligence.app",
+                "X-Title": "Career Intelligence Platform"
+            }
+        )
     else:
         raise ValueError(f"Unknown LLM provider: {settings.llm_provider}")
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
