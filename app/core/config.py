@@ -6,9 +6,9 @@ All scoring-related parameters are configurable for easy tuning without code cha
 """
 
 from functools import lru_cache
-from typing import Literal
+from typing import Literal, Any
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -129,6 +129,14 @@ class Settings(BaseSettings):
         default="anthropic/claude-3.5-sonnet",
         description="OpenRouter model to use"
     )
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # Voice Configuration
+    # ─────────────────────────────────────────────────────────────────────────
+    elevenlabs_api_key: str = Field(
+        default="",
+        description="ElevenLabs API key for voice generation"
+    )
 
     
     # ─────────────────────────────────────────────────────────────────────────
@@ -138,6 +146,15 @@ class Settings(BaseSettings):
         default=["http://localhost:3000", "http://localhost:5173"],
         description="Allowed CORS origins (production should be explicit domains)"
     )
+
+    @field_validator("allowed_origins", mode="before")
+    @classmethod
+    def parse_allowed_origins(cls, v: Any) -> list[str]:
+        if isinstance(v, str) and not v.startswith("["):
+            return [i.strip() for i in v.split(",")]
+        elif isinstance(v, (list, str)):
+            return v
+        raise ValueError(v)
     redis_url: str = Field(
         default="redis://localhost:6379",
         description="Redis URL for rate limiting and caching"

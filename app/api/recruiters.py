@@ -14,7 +14,10 @@ from typing import Annotated, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from starlette.requests import Request
 from pydantic import BaseModel
+
+from app.middleware.rate_limiting import limiter, standard_limiter, recruiter_read_limiter
 
 from app.core.auth import require_recruiter, CurrentUser
 from app.db.supabase import get_supabase_client, fetch_one, fetch_many
@@ -56,7 +59,9 @@ class CandidateTimeline(BaseModel):
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.get("/candidates", response_model=CandidateSearchResponse)
+@limiter.limit(recruiter_read_limiter)
 async def search_candidates(
+    request: Request,
     user: Annotated[CurrentUser, Depends(require_recruiter)],
     # Score filters
     min_capability_score: Optional[int] = Query(default=None, ge=0, le=100),
@@ -166,7 +171,9 @@ async def search_candidates(
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.get("/candidates/{candidate_id}", response_model=RecruiterProfileView)
+@limiter.limit(standard_limiter)
 async def get_candidate_profile(
+    request: Request,
     candidate_id: UUID,
     user: Annotated[CurrentUser, Depends(require_recruiter)]
 ):
@@ -195,7 +202,9 @@ async def get_candidate_profile(
 
 
 @router.get("/candidates/{candidate_id}/summary", response_model=IntelligenceSummary)
+@limiter.limit(standard_limiter)
 async def get_candidate_intelligence_summary(
+    request: Request,
     candidate_id: UUID,
     user: Annotated[CurrentUser, Depends(require_recruiter)]
 ):
@@ -237,7 +246,9 @@ async def get_candidate_intelligence_summary(
 
 
 @router.get("/candidates/{candidate_id}/timeline", response_model=CandidateTimeline)
+@limiter.limit(standard_limiter)
 async def get_candidate_timeline(
+    request: Request,
     candidate_id: UUID,
     user: Annotated[CurrentUser, Depends(require_recruiter)],
     days: int = Query(default=30, ge=1, le=90)

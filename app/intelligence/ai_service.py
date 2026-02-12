@@ -14,7 +14,9 @@ from app.core.llm import (
     get_interview_prep_chain,
     get_skill_gap_chain,
     get_resume_suggestions_chain,
+    get_company_questions_chain,
 )
+from app.core import voice
 from app.db.supabase import fetch_one, fetch_many
 from app.db.queries import (
     TABLE_USER_PROFILES,
@@ -104,3 +106,31 @@ async def generate_resume_suggestions(user_id: UUID) -> dict:
     result = await chain.ainvoke({"profile_context": profile_context})
     
     return result
+
+
+async def generate_company_specific_questions(
+    user_id: UUID,
+    target_role: str,
+    companies: list[str]
+) -> dict:
+    """Generate interview questions for specific companies."""
+    context = await get_user_context(user_id)
+    profile_context = format_profile_context(context)
+    
+    chain = get_company_questions_chain()
+    
+    results = {}
+    for company in companies:
+        result = await chain.ainvoke({
+            "profile_context": profile_context,
+            "company_name": company,
+            "target_role": target_role
+        })
+        results[company] = result.get("questions", [])
+        
+    return results
+
+
+def generate_voice_from_text(text: str, voice_id: str = "JBFqnCBsd6RMkjVDRZzb"):
+    """Generate audio stream from text."""
+    return voice.generate_audio(text, voice_id)

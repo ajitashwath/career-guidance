@@ -330,3 +330,33 @@ def get_skill_gap_chain():
 @lru_cache
 def get_resume_suggestions_chain():
     return build_resume_suggestions_chain()
+
+
+def build_company_questions_chain():
+    """Build chain for generating company-specific interview questions."""
+    llm = get_llm()
+    
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", """You are a hiring manager at {company_name}.
+Generate interview questions that reflect {company_name}'s specific interview style and values.
+Focus on the types of questions {company_name} is known for (e.g., leadership principles for Amazon, coding/algo for Google).
+Target Role: {target_role}"""),
+        ("human", """{profile_context}
+
+Generate 3-5 interview questions that {company_name} would ask for this role.
+
+Respond in this exact JSON format:
+{{
+    "company": "{company_name}",
+    "questions": [
+        {{"question": "...", "type": "technical/behavioral/cultural", "focus": "..."}}
+    ]
+}}""")
+    ])
+    
+    return prompt | llm | JsonOutputParser()
+
+
+@lru_cache
+def get_company_questions_chain():
+    return build_company_questions_chain()

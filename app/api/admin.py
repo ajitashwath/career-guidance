@@ -15,7 +15,10 @@ from typing import Annotated, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from starlette.requests import Request
 from pydantic import BaseModel
+
+from app.middleware.rate_limiting import limiter, admin_limiter, standard_limiter
 
 from app.core.auth import require_admin, CurrentUser
 from app.core.config import get_settings
@@ -70,7 +73,9 @@ class EventStreamResponse(BaseModel):
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.post("/users/{user_id}/recompute", response_model=RecomputeResult)
+@limiter.limit(admin_limiter)
 async def force_recompute_scores(
+    request: Request,
     user_id: UUID,
     user: Annotated[CurrentUser, Depends(require_admin)]
 ):
@@ -99,7 +104,9 @@ async def force_recompute_scores(
 
 
 @router.post("/recompute/batch", response_model=BatchRecomputeResult)
+@limiter.limit(admin_limiter)
 async def batch_recompute(
+    request: Request,
     user_ids: list[UUID],
     user: Annotated[CurrentUser, Depends(require_admin)]
 ):
@@ -127,7 +134,9 @@ async def batch_recompute(
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.get("/users/{user_id}/events", response_model=EventStreamResponse)
+@limiter.limit(standard_limiter)
 async def get_raw_events(
+    request: Request,
     user_id: UUID,
     user: Annotated[CurrentUser, Depends(require_admin)],
     limit: int = Query(default=100, ge=1, le=500),
@@ -171,7 +180,9 @@ async def get_raw_events(
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.get("/scoring/debug/{user_id}", response_model=ScoreDebugInfo)
+@limiter.limit(standard_limiter)
 async def get_scoring_debug(
+    request: Request,
     user_id: UUID,
     user: Annotated[CurrentUser, Depends(require_admin)]
 ):
@@ -195,7 +206,9 @@ async def get_scoring_debug(
 
 
 @router.get("/users/{user_id}/snapshots", response_model=list[IntelligenceSnapshot])
+@limiter.limit(standard_limiter)
 async def get_score_history(
+    request: Request,
     user_id: UUID,
     user: Annotated[CurrentUser, Depends(require_admin)],
     limit: int = Query(default=10, ge=1, le=100)
@@ -224,7 +237,9 @@ async def get_score_history(
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.get("/scoring/version", response_model=ScoringVersionInfo)
+@limiter.limit(standard_limiter)
 async def get_scoring_version(
+    request: Request,
     user: Annotated[CurrentUser, Depends(require_admin)]
 ):
     """
@@ -253,7 +268,9 @@ async def get_scoring_version(
 
 
 @router.get("/stats/overview")
+@limiter.limit(standard_limiter)
 async def get_system_stats(
+    request: Request,
     user: Annotated[CurrentUser, Depends(require_admin)]
 ):
     """

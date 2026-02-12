@@ -6,8 +6,11 @@ Students emit events through this API.
 """
 
 from typing import Annotated
-
 from fastapi import APIRouter, BackgroundTasks, Depends, status
+from starlette.requests import Request
+
+# Security Imports
+from app.middleware.rate_limiting import limiter, standard_limiter, write_limiter
 
 from app.core.auth import require_student, CurrentUser
 from app.db.supabase import insert_row
@@ -25,7 +28,9 @@ router = APIRouter()
 
 
 @router.post("/", response_model=EventResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit(write_limiter)
 async def emit_event(
+    request: Request,
     event: EventCreate,
     user: Annotated[CurrentUser, Depends(require_student)],
     background_tasks: BackgroundTasks
@@ -57,7 +62,10 @@ async def emit_event(
 
 
 @router.get("/types", response_model=EventTypesResponse)
-async def list_event_types():
+@limiter.limit(standard_limiter)
+async def list_event_types(
+    request: Request
+):
     """
     List all valid event types grouped by scoring category.
     

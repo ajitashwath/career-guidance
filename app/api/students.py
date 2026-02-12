@@ -12,8 +12,10 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from starlette.requests import Request
 
 from app.core.auth import require_student, CurrentUser
+from app.middleware.rate_limiting import limiter, standard_limiter, write_limiter
 from app.db.supabase import (
     get_supabase_client,
     fetch_one,
@@ -64,7 +66,9 @@ router = APIRouter()
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.get("/me", response_model=UserProfileResponse)
+@limiter.limit(standard_limiter)
 async def get_my_profile(
+    request: Request,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
     """Get the current student's profile."""
@@ -84,7 +88,9 @@ async def get_my_profile(
 
 
 @router.patch("/me", response_model=UserProfileResponse)
+@limiter.limit(write_limiter)
 async def update_my_profile(
+    request: Request,
     update_data: UserProfileUpdate,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
@@ -107,7 +113,9 @@ async def update_my_profile(
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.get("/me/skills", response_model=list[UserSkillResponse])
+@limiter.limit(standard_limiter)
 async def get_my_skills(
+    request: Request,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
     """Get all skills for the current student."""
@@ -122,7 +130,9 @@ async def get_my_skills(
 
 
 @router.post("/me/skills", response_model=UserSkillResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit(write_limiter)
 async def add_skill(
+    request: Request,
     skill: UserSkillCreate,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
@@ -135,7 +145,9 @@ async def add_skill(
 
 
 @router.patch("/me/skills/{skill_id}", response_model=UserSkillResponse)
+@limiter.limit(write_limiter)
 async def update_skill(
+    request: Request,
     skill_id: UUID,
     update_data: UserSkillUpdate,
     user: Annotated[CurrentUser, Depends(require_student)]
@@ -161,7 +173,9 @@ async def update_skill(
 
 
 @router.delete("/me/skills/{skill_id}", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit(write_limiter)
 async def delete_skill(
+    request: Request,
     skill_id: UUID,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
@@ -181,7 +195,9 @@ async def delete_skill(
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.get("/me/education", response_model=list[UserEducationResponse])
+@limiter.limit(standard_limiter)
 async def get_my_education(
+    request: Request,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
     """Get all education entries for the current student."""
@@ -196,7 +212,9 @@ async def get_my_education(
 
 
 @router.post("/me/education", response_model=UserEducationResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit(write_limiter)
 async def add_education(
+    request: Request,
     education: UserEducationCreate,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
@@ -215,7 +233,9 @@ async def add_education(
 
 
 @router.patch("/me/education/{education_id}", response_model=UserEducationResponse)
+@limiter.limit(write_limiter)
 async def update_education(
+    request: Request,
     education_id: UUID,
     update_data: UserEducationUpdate,
     user: Annotated[CurrentUser, Depends(require_student)]
@@ -247,7 +267,9 @@ async def update_education(
 
 
 @router.delete("/me/education/{education_id}", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit(write_limiter)
 async def delete_education(
+    request: Request,
     education_id: UUID,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
@@ -267,7 +289,9 @@ async def delete_education(
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.get("/me/experience", response_model=list[UserExperienceResponse])
+@limiter.limit(standard_limiter)
 async def get_my_experience(
+    request: Request,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
     """Get all work experience for the current student."""
@@ -282,7 +306,9 @@ async def get_my_experience(
 
 
 @router.post("/me/experience", response_model=UserExperienceResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit(write_limiter)
 async def add_experience(
+    request: Request,
     experience: UserExperienceCreate,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
@@ -300,7 +326,9 @@ async def add_experience(
 
 
 @router.patch("/me/experience/{experience_id}", response_model=UserExperienceResponse)
+@limiter.limit(write_limiter)
 async def update_experience(
+    request: Request,
     experience_id: UUID,
     update_data: UserExperienceUpdate,
     user: Annotated[CurrentUser, Depends(require_student)]
@@ -332,7 +360,9 @@ async def update_experience(
 
 
 @router.delete("/me/experience/{experience_id}", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit(write_limiter)
 async def delete_experience(
+    request: Request,
     experience_id: UUID,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
@@ -352,7 +382,9 @@ async def delete_experience(
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.get("/me/projects", response_model=list[UserProjectResponse])
+@limiter.limit(standard_limiter)
 async def get_my_projects(
+    request: Request,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
     """Get all projects for the current student."""
@@ -367,7 +399,9 @@ async def get_my_projects(
 
 
 @router.post("/me/projects", response_model=UserProjectResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit(write_limiter)
 async def add_project(
+    request: Request,
     project: UserProjectCreate,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
@@ -386,7 +420,9 @@ async def add_project(
 
 
 @router.patch("/me/projects/{project_id}", response_model=UserProjectResponse)
+@limiter.limit(write_limiter)
 async def update_project(
+    request: Request,
     project_id: UUID,
     update_data: UserProjectUpdate,
     user: Annotated[CurrentUser, Depends(require_student)]
@@ -417,7 +453,9 @@ async def update_project(
 
 
 @router.delete("/me/projects/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit(write_limiter)
 async def delete_project(
+    request: Request,
     project_id: UUID,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
@@ -437,7 +475,9 @@ async def delete_project(
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.get("/me/certifications", response_model=list[UserCertificationResponse])
+@limiter.limit(standard_limiter)
 async def get_my_certifications(
+    request: Request,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
     """Get all certifications for the current student."""
@@ -452,7 +492,9 @@ async def get_my_certifications(
 
 
 @router.post("/me/certifications", response_model=UserCertificationResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit(write_limiter)
 async def add_certification(
+    request: Request,
     certification: UserCertificationCreate,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
@@ -470,7 +512,9 @@ async def add_certification(
 
 
 @router.patch("/me/certifications/{certification_id}", response_model=UserCertificationResponse)
+@limiter.limit(write_limiter)
 async def update_certification(
+    request: Request,
     certification_id: UUID,
     update_data: UserCertificationUpdate,
     user: Annotated[CurrentUser, Depends(require_student)]
@@ -501,7 +545,9 @@ async def update_certification(
 
 
 @router.delete("/me/certifications/{certification_id}", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit(write_limiter)
 async def delete_certification(
+    request: Request,
     certification_id: UUID,
     user: Annotated[CurrentUser, Depends(require_student)]
 ):
