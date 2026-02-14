@@ -38,3 +38,4 @@ mypy==1.8.0
 # Security Scanning (dev/CI only)
 safety==3.0.1
 bandit==1.7.6
+mangum
