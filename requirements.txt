@@ -1,8 +1,8 @@
 fastapi==0.109.2
 uvicorn[standard]==0.27.1
-pydantic==2.6.1
-pydantic[email]==2.6.1
-pydantic-settings==2.1.0
+pydantic>=2.8.2
+pydantic[email]
+pydantic-settings
 
 langchain==0.3.0
 langchain-openai==0.2.0
@@ -39,3 +39,4 @@ mypy==1.8.0
 safety==3.0.1
 bandit==1.7.6
 mangum
+google-generativeai>=0.8.0
