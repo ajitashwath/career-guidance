@@ -360,3 +360,41 @@ Respond in this exact JSON format:
 @lru_cache
 def get_company_questions_chain():
     return build_company_questions_chain()
+
+
+def build_answer_evaluation_chain():
+    """Build chain for evaluating interview answers."""
+    llm = get_llm()
+    
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", """You are an expert technical interviewer.
+Evaluate the candidate's answer based on the question and their profile context.
+Be constructive but critical.
+Focus on:
+1. Technical accuracy
+2. Communication clarity
+3. Relevance to the role"""),
+        ("human", """{profile_context}
+
+Question: {question}
+
+Candidate's Answer: {answer}
+
+Target Role: {target_role}
+
+Evaluate this answer.
+
+Respond in this exact JSON format:
+{{
+    "rating": 7,
+    "feedback": "Specific feedback on what was good and what was missing...",
+    "improved_answer": "An example of a better way to answer this question..."
+}}""")
+    ])
+    
+    return prompt | llm | JsonOutputParser()
+
+
+@lru_cache
+def get_answer_evaluation_chain():
+    return build_answer_evaluation_chain()

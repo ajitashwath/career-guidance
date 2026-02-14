@@ -114,8 +114,6 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
             log_data = {
                 "timestamp": time.time(),
                 "level": "INFO" if status_code < 400 else "WARNING" if status_code < 500 else "ERROR",
-                "name": "audit",
-                "message": "API Request",
                 "request_id": request_id,
                 "user_id": user_id,
                 "ip": client_ip,
@@ -169,7 +167,6 @@ def log_security_event(event_type: str, details: dict):
         extra={
             "timestamp": time.time(),
             "level": "WARNING",
-            "name": "security",
             "event_type": event_type,
             **redact_pii(details)
         }

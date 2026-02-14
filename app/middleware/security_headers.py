@@ -50,10 +50,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # Adjust based on your frontend needs
         csp_directives = [
             "default-src 'self'",
-            "script-src 'self'",
-            "style-src 'self' 'unsafe-inline'",  # May need adjustment for CSS frameworks
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
             "img-src 'self' data: https:",
-            "font-src 'self'",
+            "font-src 'self' https://fonts.gstatic.com",
             "connect-src 'self'",
             "frame-ancestors 'none'",
             "base-uri 'self'",

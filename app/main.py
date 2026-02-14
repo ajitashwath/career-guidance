@@ -12,6 +12,7 @@ from app.api.events import router as events_router
 from app.api.recruiters import router as recruiters_router
 from app.api.admin import router as admin_router
 from app.api.ai import router as ai_router
+from app.api.interview import router as interview_router
 
 # Security middleware
 from app.middleware.rate_limiting import limiter, rate_limit_exceeded_handler
@@ -95,6 +96,12 @@ app.include_router(
     ai_router,
     prefix="/ai",
     tags=["AI"]
+)
+
+app.include_router(
+    interview_router,
+    prefix="/interview",
+    tags=["Voice Interview"]
 )
 
 @app.get("/health", tags=["System"])
