@@ -30,11 +30,10 @@ def generate_audio(text: str, voice_id: str = "JBFqnCBsd6RMkjVDRZzb") -> Iterato
     """
     client = get_elevenlabs_client()
     
-    audio_stream = client.generate(
+    audio_stream = client.text_to_speech.convert(
         text=text,
-        voice=voice_id,
-        model="eleven_monolingual_v1",
-        stream=True
+        voice_id=voice_id,
+        model_id="eleven_monolingual_v1"
     )
     
     return audio_stream

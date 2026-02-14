@@ -51,7 +51,7 @@ def test_generate_voice_from_text():
     
     with patch("app.core.voice.get_elevenlabs_client") as mock_get_client:
         mock_client = MagicMock()
-        mock_client.generate.return_value = mock_audio_stream
+        mock_client.text_to_speech.convert.return_value = mock_audio_stream
         mock_get_client.return_value = mock_client
         
         # execution
@@ -61,4 +61,4 @@ def test_generate_voice_from_text():
         assert stream is not None
         chunks = list(stream)
         assert chunks == [b"chunk1", b"chunk2"]
-        mock_client.generate.assert_called_once()
+        mock_client.text_to_speech.convert.assert_called_once()
