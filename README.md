@@ -1,8 +1,8 @@
-# Know More - AI Career Intelligence Backend
+# AI Career Intelligence Backend
 
 Event-driven backend for an AI-powered career intelligence platform that tracks user actions, derives behavioral intelligence scores, and serves students, recruiters, and universities with role-based access.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.11+
@@ -38,7 +38,7 @@ Event-driven backend for an AI-powered career intelligence platform that tracks 
 docker-compose up --build
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -62,7 +62,7 @@ docker-compose up --build
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 📊 Intelligence Scoring
+## Intelligence Scoring
 
 ### Dimensions (0-100 each)
 | Score | Weight | Signals |
@@ -78,7 +78,7 @@ docker-compose up --build
 - **Tier 2**: 40 ≤ score < 80 (Average)
 - **Tier 3**: score < 40 (Needs development)
 
-## 🛡️ Security
+## Security
 
 - JWT authentication via Supabase Auth
 - Role-based access control (Student, Recruiter, Admin)
@@ -86,7 +86,7 @@ docker-compose up --build
 - Recruiters never see raw events or private data
 - Students cannot see internal tier labels
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 app/
@@ -114,7 +114,7 @@ app/
     └── intelligence.py  # Score & snapshot models
 ```
 
-## 🔧 Configuration
+## Configuration
 
 | Variable | Description | Default |
 |----------|-------------|---------|
@@ -125,7 +125,7 @@ app/
 | `EVENT_WINDOW_DAYS` | Days of events to analyze | 90 |
 | `DECAY_HALF_LIFE_DAYS` | Exponential decay half-life | 30 |
 
-## 📖 API Reference
+## API Reference
 
 ### Students
 - `GET /students/me` - Get own profile
@@ -152,7 +152,7 @@ app/
 - `GET /admin/scoring/debug/{id}` - Debug score breakdown
 - `GET /admin/scoring/version` - View scoring config
 
-## 🧪 Testing
+## Testing
 
 ```bash
 pytest tests/ -v
