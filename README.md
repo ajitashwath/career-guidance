@@ -1,4 +1,4 @@
-# AI Career Intelligence Backend
+# AI Career Intelligence - Backend
 
 Event-driven backend for an AI-powered career intelligence platform that tracks user actions, derives behavioral intelligence scores, and serves students, recruiters, and universities with role-based access.
 
